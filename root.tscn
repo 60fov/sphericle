@@ -1,0 +1,43 @@
+[gd_scene load_steps=6 format=3 uid="uid://cxam1y8m1oeto"]
+
+[ext_resource type="Script" path="res://character_controller.gd" id="1_de1ol"]
+[ext_resource type="Script" path="res://planet.gd" id="1_fv0cm"]
+[ext_resource type="Script" path="res://camera_controller.gd" id="2_murxn"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_vdxer"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_2aivh"]
+
+[node name="root" type="Node3D"]
+
+[node name="planet" type="CSGSphere3D" parent="."]
+radius = 25.0
+radial_segments = 32
+rings = 32
+script = ExtResource("1_fv0cm")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="planet"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="planet/StaticBody3D"]
+transform = Transform3D(51.11, 0, 0, 0, 51.11, 0, 0, 0, 51.11, 0, 0, 0)
+shape = SubResource("SphereShape3D_vdxer")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="planet"]
+transform = Transform3D(0.984201, -0.041731, 0.172068, -0.140617, 0.406315, 0.902848, -0.10759, -0.91278, 0.394027, 0, 0, 0)
+
+[node name="character" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 28.1302, 0)
+script = ExtResource("1_de1ol")
+rotation_speed = null
+
+[node name="camera" type="Camera3D" parent="character"]
+current = true
+script = ExtResource("2_murxn")
+
+[node name="collider" type="CollisionShape3D" parent="character"]
+shape = SubResource("CapsuleShape3D_2aivh")
+
+[node name="model" type="CSGTorus3D" parent="character"]
+inner_radius = 0.386
+outer_radius = 0.518
+sides = 9
