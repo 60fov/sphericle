@@ -1,11 +1,78 @@
-[gd_scene load_steps=8 format=3 uid="uid://cxam1y8m1oeto"]
+[gd_scene load_steps=12 format=3 uid="uid://cxam1y8m1oeto"]
 
 [ext_resource type="Script" path="res://character_controller.gd" id="1_de1ol"]
 [ext_resource type="Script" path="res://planet.gd" id="1_fv0cm"]
 [ext_resource type="Script" path="res://camera_controller.gd" id="2_murxn"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_k3yq6"]
-transparency = 1
+[sub_resource type="Shader" id="Shader_rja0y"]
+code = "// NOTE: Shader automatically converted from Godot Engine 4.3.stable's StandardMaterial3D.
+
+shader_type spatial;
+render_mode blend_mix, depth_draw_opaque, cull_back, diffuse_toon, specular_toon;
+
+uniform vec4 albedo : source_color;
+uniform sampler2D texture_albedo : source_color, filter_linear_mipmap, repeat_enable;
+uniform float point_size : hint_range(0.1, 128.0, 0.1);
+
+uniform float roughness : hint_range(0.0, 1.0);
+uniform sampler2D texture_metallic : hint_default_white, filter_linear_mipmap, repeat_enable;
+uniform vec4 metallic_texture_channel;
+uniform sampler2D texture_roughness : hint_roughness_r, filter_linear_mipmap, repeat_enable;
+
+uniform float specular : hint_range(0.0, 1.0, 0.01);
+uniform float metallic : hint_range(0.0, 1.0, 0.01);
+
+uniform vec3 uv1_scale;
+uniform vec3 uv1_offset;
+uniform vec3 uv2_scale;
+uniform vec3 uv2_offset;
+
+void vertex() {
+	UV = UV * uv1_scale.xy + uv1_offset.xy;
+}
+
+void fragment() {
+	vec2 base_uv = UV;
+
+	vec4 albedo_tex = texture(texture_albedo, base_uv);
+	ALBEDO = albedo.rgb * albedo_tex.rgb;
+
+	float metallic_tex = dot(texture(texture_metallic, base_uv), metallic_texture_channel);
+	METALLIC = metallic_tex * metallic;
+	SPECULAR = specular;
+
+	vec4 roughness_texture_channel = vec4(1.0, 0.0, 0.0, 0.0);
+	float roughness_tex = dot(texture(texture_roughness, base_uv), roughness_texture_channel);
+	ROUGHNESS = roughness_tex * roughness;
+}
+"
+
+[sub_resource type="Gradient" id="Gradient_ooh0c"]
+interpolation_mode = 1
+offsets = PackedFloat32Array(0.29918, 0.614754)
+colors = PackedColorArray(1, 1, 1, 1, 0.127049, 0.127049, 0.127049, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_h88sk"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_7c7oj"]
+seamless = true
+color_ramp = SubResource("Gradient_ooh0c")
+noise = SubResource("FastNoiseLite_h88sk")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_d0tig"]
+render_priority = 0
+shader = SubResource("Shader_rja0y")
+shader_parameter/albedo = Color(0.263789, 0.5522, 0.299941, 1)
+shader_parameter/point_size = 1.0
+shader_parameter/roughness = 0.0
+shader_parameter/metallic_texture_channel = null
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/uv1_scale = Vector3(1, 1, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
+shader_parameter/texture_albedo = SubResource("NoiseTexture2D_7c7oj")
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_vdxer"]
 
@@ -17,9 +84,8 @@ albedo_color = Color(0.950333, 0.538767, 0.791219, 1)
 [node name="root" type="Node3D"]
 
 [node name="planet" type="CSGSphere3D" parent="."]
-material_override = SubResource("StandardMaterial3D_k3yq6")
-transparency = 0.54
-radius = 15.0
+material_override = SubResource("ShaderMaterial_d0tig")
+radius = 11.191
 radial_segments = 32
 rings = 32
 script = ExtResource("1_fv0cm")
@@ -34,12 +100,16 @@ shape = SubResource("SphereShape3D_vdxer")
 transform = Transform3D(0.984201, -0.041731, 0.172068, -0.140617, 0.406315, 0.902848, -0.10759, -0.91278, 0.394027, 0, 0, 0)
 
 [node name="character" type="CharacterBody3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 28.1302, 0)
+transform = Transform3D(-4.37114e-08, 1, -4.37114e-08, 0, -4.37114e-08, -1, -1, -4.37114e-08, 1.91069e-15, 11.191, 0, 0)
 script = ExtResource("1_de1ol")
 
 [node name="camera" type="Camera3D" parent="character"]
+transform = Transform3D(-1, -2.35485e-07, 6.61636e-08, -4.37114e-08, 0.438181, 0.898887, -2.40665e-07, 0.898887, -0.438181, 3.52429e-11, 20.76, -10.1199)
 current = true
+fov = 28.6
 script = ExtResource("2_murxn")
+height = 20.76
+distance = -10.12
 
 [node name="collider" type="CollisionShape3D" parent="character"]
 shape = SubResource("CapsuleShape3D_2aivh")
@@ -52,5 +122,4 @@ sides = 9
 
 [node name="Camera3D" type="Camera3D" parent="."]
 transform = Transform3D(0.903977, 0.102608, -0.415086, 0.0515187, 0.937569, 0.343963, 0.424466, -0.332319, 0.842255, -17.6548, 18.8824, 46.1545)
-current = true
 fov = 39.6
