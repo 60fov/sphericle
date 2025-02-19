@@ -28,7 +28,6 @@ transform = Transform3D(0.984201, -0.041731, 0.172068, -0.140617, 0.406315, 0.90
 [node name="character" type="CharacterBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 28.1302, 0)
 script = ExtResource("1_de1ol")
-rotation_speed = null
 
 [node name="camera" type="Camera3D" parent="character"]
 current = true
@@ -41,3 +40,8 @@ shape = SubResource("CapsuleShape3D_2aivh")
 inner_radius = 0.386
 outer_radius = 0.518
 sides = 9
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.903977, 0.102608, -0.415086, 0.0515187, 0.937569, 0.343963, 0.424466, -0.332319, 0.842255, -17.6548, 18.8824, 46.1545)
+current = true
+fov = 82.8

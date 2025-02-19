@@ -15,19 +15,24 @@ var long_quat: Quaternion
 
 func _ready() -> void:
 	planet = get_node("../planet")
+	var new_position = Vector3(sin(long), sin(lat), cos(long)) * planet.radius
+	position = new_position
 
 func _physics_process(delta: float) -> void:
 	# Get the input direction and handle the movement/deceleration.
 	# As good practice, you should replace UI actions with custom gameplay actions.
-	var input_dir := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
-	var direction := (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
+	var input_dir := Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
+	var direction := (Vector3(input_dir.x, 0, input_dir.y)).normalized()
 	#var delta_long: float
-	if direction:
-		
+	
 	#long_quat = Quaternion(Vector3(0, 1, 0), long)
 	#lat_quat = Quaternion(Vector3(1, 0, 0), lat)
 	#var new_position = Vector3(0, 0, 1) * long_quat * lat_quat
-	#var new_position = Vector3(sin(long), sin(lat), cos(long))
+	if direction:
+		long += direction.x * delta
+		lat += direction.z * delta
+		var new_position = Vector3(0, 0, 1).normalized() * planet.radius
+		position = new_position
 	#var up = new_position.normalized()
 	#var left = Vector3(0, 0, 1) * Quaternion(up, look_angle)
 	#var forward = up.cross(left)
